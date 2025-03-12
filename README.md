@@ -236,7 +236,6 @@ Each sub-strategy can have different agents (signal generation, risk filters, ex
 
 
 ### 1. Arbitrage  
-**January 25 performance**: +0.78% (12-month performance +6.29%, five-year CAR +5.14%)
 
 **General Definition**: Strategies that attempt to capture risk-free (or low-risk) profits by exploiting mispricings of the same or closely related instruments.  
 Typical sub-strategies include:  
@@ -257,7 +256,6 @@ src/pods/strategies/arbitrage/
 ---
 
 ### 2. Credit  
-**January 25 performance**: +0.95% (12-month performance +9.80%, five-year CAR +5.59%)
 
 **General Definition**: Strategies focusing on debt instruments and credit-like exposures (corporate bonds, structured credit, direct lending, distressed debt).  
 Typical sub-strategies include:  
@@ -284,7 +282,6 @@ src/pods/strategies/credit/
 ---
 
 ### 3. Equity Long/Short  
-**January 25 performance**: +2.22% (12-month performance +14.51%, five-year CAR +7.79%)
 
 **General Definition**: Investing in global equities on the long and short side. Most strategies have a fundamental bias (value/growth). Some are more technical/tactical, incorporating positioning/flow data.  
 Typical sub-strategies include:  
@@ -311,7 +308,6 @@ src/pods/strategies/equity_ls/
 ---
 
 ### 4. Event Driven  
-**January 25 performance**: +1.80% (12-month performance +11.87%, five-year CAR +8.16%)
 
 **General Definition**: Strategies that invest around corporate events (M&A, spin-offs, restructuring, activism). Identifies mispriced securities with favorable risk/reward based on catalysts or event outcomes.  
 Typical sub-strategies include:  
@@ -332,7 +328,6 @@ src/pods/strategies/event_driven/
 ---
 
 ### 5. Long Biased  
-**January 25 performance**: +3.19% (12-month performance +13.99%, five-year CAR +6.56%)
 
 **General Definition**: Overwhelmingly net-long strategies, covering multiple asset classes (equities, commodities, etc.) but still structured like hedge funds (may use some leverage, limited shorts).  
 Typical sub-strategies include:  
@@ -353,7 +348,6 @@ src/pods/strategies/long_biased/
 ---
 
 ### 6. Macro  
-**January 25 performance**: +1.32% (12-month performance +10.73%, five-year CAR +6.20%)
 
 **General Definition**: Takes positions (directional or relative-value) in global markets (FX, rates, equity indexes, commodities) guided by top-down macro views. Sub-strategies may emphasize emerging markets, commodity themes, or fixed-income relative value.  
 Typical sub-strategies include:  
@@ -374,7 +368,6 @@ src/pods/strategies/macro/
 ---
 
 ### 7. Multi-Strategy  
-**January 25 performance**: +1.33% (12-month performance +13.14%, five-year CAR +11.24%)
 
 **General Definition**: Capital is deployed across multiple sub-strategies and asset classes, often with distinct PM/risk-taking teams. Extremely diversified approach.  
 If you want to build a multi-strategy “umbrella” that contains multiple sub-pods *within* it, you can do so by creating one overarching strategy pod that internally references others.  
@@ -388,7 +381,6 @@ src/pods/strategies/multi_strategy/
 ---
 
 ### 8. Quant  
-**January 25 performance**: +2.45% (12-month performance +9.31%, five-year CAR +5.02%)
 
 **General Definition**: Systematic strategies that rely on algorithmic decision-making. May include CTA (trend-following), stat arb, quant macro, factor-based equity market neutral, alternative risk premia, etc.  
 Typical sub-strategies include:  
