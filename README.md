@@ -19,20 +19,20 @@ flowchart TD
     end
 
     %% === TRADING PODS SUBGRAPH ===
-    subgraph Pods [Trading Pods (src/pods/strategies)]
+    subgraph Pods [Trading Pods - src/pods/strategies]
         subgraph ELS [equity_long_short]
             ELS1(moving_average.py)
         end
-        
+
         subgraph EV [event_driven]
-            ED1(bill_ackman.py)
-            ED2(congressional_trading.py)
+            EV1(bill_ackman.py)
+            EV2(congressional_trading.py)
         end
-        
+
         subgraph FN [fundemental]
             FN1(fundamentals.py)
         end
-        
+
         subgraph LB [long_biased]
             LB1(ben_graham.py)
             LB2(cathie_wood.py)
@@ -42,11 +42,11 @@ flowchart TD
         subgraph MC [macro]
             MC1(stanley_druckenmiller.py)
         end
-        
+
         subgraph MS [multi_strategy]
             MS1(__init__.py)
         end
-        
+
         subgraph QN [quant]
             QN1(sentiment.py)
             QN2(sentiment_trading.py)
@@ -58,13 +58,14 @@ flowchart TD
     Pods --> DM
     Pods --> RM
     RM --> Pods
-    
+
     %% === BACKTESTING ENGINE ===
     Pods --> BE[Backtesting Engine]
     BE --> Pods
 
     %% === CLI INTERFACE ===
     CLI[CLI Interface] -.-> BE
+
 ```
 
 

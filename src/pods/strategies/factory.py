@@ -12,7 +12,7 @@ from src.pods.strategies.long_biased.charlie_munger import CharlieMungerPod
 from src.pods.strategies.event_driven.bill_ackman import BillAckmanPod
 from src.pods.strategies.long_biased.cathie_wood import CathieWoodPod
 from src.pods.strategies.macro.stanley_druckenmiller import StanleyDruckenmillerPod
-from src.pods.strategies.quant.fundamentals import FundamentalsPod
+from src.pods.strategies.fundemental.fundamentals import FundamentalsPod
 from src.pods.strategies.quant.sentiment import SentimentPod
 from src.utils.config import default_config_manager
 
