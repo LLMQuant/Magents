@@ -1,0 +1,83 @@
+###################################
+# Magents Trading System Configuration
+###################################
+
+# Global Settings
+global:
+  initial_capital: 1000000.0  # Initial capital in USD
+  max_leverage: 2.0           # Maximum allowed leverage
+  transaction_cost: 0.001     # 10 basis points per trade
+  slippage: 0.0005            # 5 basis points slippage
+  
+# Strategy-specific Settings
+strategies:
+  # Equity Long/Short Strategies
+  ma:
+    type: equity_long_short   # Strategy type
+    fast_window: 10           # Fast moving average window
+    slow_window: 30           # Slow moving average window
+    position_size: 100        # Base position size in number of shares
+  
+  # Long Biased Strategies
+  value:
+    type: long_biased         # Strategy type
+    signal_threshold: 0.65    # Signal threshold for trades (0.0-1.0)
+    position_size: 150        # Base position size in number of shares
+    max_positions: 5          # Maximum number of concurrent positions
+  
+  buffett:
+    type: long_biased         # Strategy type
+    signal_threshold: 0.65    # Signal threshold for trades (0.0-1.0)
+    position_size: 150        # Base position size in number of shares
+    max_positions: 5          # Maximum number of concurrent positions
+  
+  graham:
+    type: long_biased         # Strategy type
+    signal_threshold: 0.65    # Signal threshold for trades (0.0-1.0)
+    position_size: 150        # Base position size in number of shares
+    max_positions: 5          # Maximum number of concurrent positions
+  
+  munger:
+    type: long_biased         # Strategy type
+    signal_threshold: 0.65    # Signal threshold for trades (0.0-1.0)
+    position_size: 150        # Base position size in number of shares
+    max_positions: 5          # Maximum number of concurrent positions
+  
+  wood:
+    type: long_biased         # Strategy type
+    signal_threshold: 0.65    # Signal threshold for trades (0.0-1.0)
+    position_size: 150        # Base position size in number of shares
+    max_positions: 5          # Maximum number of concurrent positions
+  
+  # Quant Strategies
+  sentiment:
+    type: quant               # Strategy type
+    signal_threshold: 0.6     # Signal threshold for trades (0.0-1.0)
+    position_size: 120        # Base position size in number of shares
+    max_positions: 8          # Maximum number of concurrent positions
+    
+  fundamentals:
+    type: quant               # Strategy type
+    signal_threshold: 0.6     # Signal threshold for trades (0.0-1.0)
+    position_size: 120        # Base position size in number of shares
+    max_positions: 8          # Maximum number of concurrent positions
+  
+  # Event Driven Strategies
+  congress:
+    type: event_driven        # Strategy type
+    signal_threshold: 0.7     # Signal threshold for trades (0.0-1.0)
+    position_size: 200        # Base position size in number of shares
+    max_positions: 4          # Maximum number of concurrent positions
+  
+  ackman:
+    type: event_driven        # Strategy type
+    signal_threshold: 0.7     # Signal threshold for trades (0.0-1.0)
+    position_size: 200        # Base position size in number of shares
+    max_positions: 4          # Maximum number of concurrent positions
+  
+  # Macro Strategies
+  druckenmiller:
+    type: macro               # Strategy type
+    signal_threshold: 0.7     # Signal threshold for trades (0.0-1.0)
+    position_size: 200        # Base position size in number of shares
+    max_positions: 4          # Maximum number of concurrent positions 
