@@ -16,40 +16,37 @@ flowchart TD
     subgraph CentralTeam [Central Team Modules]
         DM
         RM[Risk Management]
+        DAT[Data Team]
+        AIT[AI Team]
+        EXE[Execution Team]
     end
 
-    %% === TRADING PODS SUBGRAPH ===
-    subgraph Pods [Trading Pods - src/pods/strategies]
-        subgraph ELS [equity_long_short]
-            ELS1(moving_average.py)
+    %% === TRADING PODS ===
+    subgraph Pods [Trading Pods]
+        
+        subgraph FundamentalPod
+            F1(Agent 1: ben_graham.py)
+            F2(Agent 2: cathie_wood.py)
         end
 
-        subgraph EV [event_driven]
-            EV1(bill_ackman.py)
-            EV2(congressional_trading.py)
+        subgraph EventDrivenPod
+            E1(Agent 1: bill_ackman.py)
+            E2(Agent 2: congressional_trading.py)
         end
 
-        subgraph FN [fundemental]
-            FN1(fundamentals.py)
+        subgraph LongBiasedPod
+            L1(Agent 1: warren_buffett.py)
+            L2(Agent 2: charlie_munger.py)
         end
 
-        subgraph LB [long_biased]
-            LB1(ben_graham.py)
-            LB2(cathie_wood.py)
-            LB3(warren_buffett.py)
+        subgraph QuantPod
+            Q1(Agent 1: sentiment.py)
+            Q2(Agent 2: sentiment_trading.py)
         end
 
-        subgraph MC [macro]
-            MC1(stanley_druckenmiller.py)
-        end
-
-        subgraph MS [multi_strategy]
-            MS1(__init__.py)
-        end
-
-        subgraph QN [quant]
-            QN1(sentiment.py)
-            QN2(sentiment_trading.py)
+        subgraph MacroPod
+            M1(Agent 1: stanley_druckenmiller.py)
+            M2(Agent 2: macro.py)
         end
     end
 
@@ -58,14 +55,11 @@ flowchart TD
     Pods --> DM
     Pods --> RM
     RM --> Pods
-
-    %% === BACKTESTING ENGINE ===
     Pods --> BE[Backtesting Engine]
     BE --> Pods
 
     %% === CLI INTERFACE ===
     CLI[CLI Interface] -.-> BE
-
 ```
 
 
