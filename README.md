@@ -1,439 +1,199 @@
 # Magents
-**Multi-Agent Generative Trading System**  
-This is a proof of concept for an AI-powered multi-strategy hedge fund simulation and backtesting framework.
 
-## Overview
+**Multi-Agent Generative Trading System**
 
-Magents is an open-source Python framework for a multi-strategy hedge fund backtesting and simulation system. The platform is designed as a multi-agent system in which independent strategy "pods" operate concurrently within a shared simulation environment. The goal is to enable realistic backtesting of multiple trading strategies under one umbrella, with unified data feeds and rigorous risk controls.
+[![CI](https://github.com/LLMQuant/magents/actions/workflows/ci.yml/badge.svg)](https://github.com/LLMQuant/magents/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
+An open-source Python framework for multi-strategy hedge fund simulation and backtesting. Magents models independent strategy "pods" as concurrent agents within a shared event-driven simulation, enabling realistic backtesting under unified data feeds and risk controls.
+
+---
+
+## Architecture
 
 ```mermaid
 flowchart TD
-
-    %% === DATA PIPELINE & MANAGEMENT ===
     DP[Data Pipeline] --> DM[Data Management]
 
     subgraph CentralTeam [Central Team Modules]
         DM
         RM[Risk Management]
-        DAT[Data Team]
-        AIT[AI Team]
-        EXE[Execution Team]
     end
 
-    %% === TRADING PODS ===
     subgraph Pods [Trading Pods]
-        
-        subgraph FundamentalPod
-            F1(Agent 1: ben_graham.py)
-            F2(Agent 2: cathie_wood.py)
+        subgraph LongBiasedPod
+            L1(warren_buffett.py)
+            L2(charlie_munger.py)
+            L3(ben_graham.py)
+            L4(cathie_wood.py)
         end
 
         subgraph EventDrivenPod
-            E1(Agent 1: bill_ackman.py)
-            E2(Agent 2: congressional_trading.py)
-        end
-
-        subgraph LongBiasedPod
-            L1(Agent 1: warren_buffett.py)
-            L2(Agent 2: charlie_munger.py)
+            E1(bill_ackman.py)
+            E2(congressional_trading.py)
         end
 
         subgraph QuantPod
-            Q1(Agent 1: sentiment.py)
-            Q2(Agent 2: sentiment_trading.py)
+            Q1(sentiment_trading.py)
+            Q2(fundamentals.py)
         end
 
         subgraph MacroPod
-            M1(Agent 1: stanley_druckenmiller.py)
-            M2(Agent 2: macro.py)
+            M1(stanley_druckenmiller.py)
+        end
+
+        subgraph EquityLSPod
+            ELS1(moving_average.py)
         end
     end
 
-    %% === INTERACTIONS ===
     DM --> Pods
-    Pods --> DM
     Pods --> RM
     RM --> Pods
     Pods --> BE[Backtesting Engine]
     BE --> Pods
-
-    %% === CLI INTERFACE ===
     CLI[CLI Interface] -.-> BE
 ```
 
+## Key Features
 
-
-
-### Key Features
-
-- **Multi-Agent System**: Each trading strategy runs as an independent "pod" with its own agents  
-- **Event-Driven Architecture**: Built on an event-driven foundation for realistic simulation  
-- **Comprehensive Risk Management**: Central risk controls that monitor and enforce limits  
-- **High-Fidelity Backtesting**: Realistic transaction costs, slippage, and order execution  
-- **Modular Design**: Easily extend with new strategies, data sources, or risk rules  
+- **Multi-Agent Pods** — Each strategy runs as an independent pod with specialized agents (signal, execution, risk)
+- **Event-Driven Engine** — Realistic order lifecycle with market data events, fills, and risk alerts
+- **Central Risk Management** — Portfolio-level and global constraints (drawdown, position, leverage, exposure limits)
+- **High-Fidelity Backtesting** — Configurable transaction costs, slippage, and support for market/limit/stop/stop-limit orders
+- **Modular & Extensible** — Add new strategies, data feeds, or risk rules without modifying core code
 
 ---
 
-### High-Level Table of Main Strategy Types
-
-| **Strategy Category**  | **Definition Overview**                                                                                                                                                                                                                                                                                                  | **Example Path**                                  |
-|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|
-| **Arbitrage**          | Looks for mispricings in the same (or closely related) instruments. Encompasses convertible bond arbitrage, tail protection trades, volatility arbitrage, opportunistic arbitrage, etc.                                                                                                                                   | `src/pods/strategies/arbitrage/`                  |
-| **Credit**             | Focuses on debt instruments (corporate bonds, distressed debt, direct lending, structured credit, etc.), often employing long/short relative value trades or fundamental analysis of credit quality.                                                                                                                                     | `src/pods/strategies/credit/`                     |
-| **Equity Long/Short**  | Invests in global equities, both long and short. Typically fundamental-driven (value or growth) but can also incorporate technical or tactical approaches. Sub-categories include US equity L/S, APAC, Europe, global, sector-focused, etc.                                                                                     | `src/pods/strategies/equity_ls/`                  |
-| **Event Driven**       | Trades around corporate events (mergers, spin-offs, restructurings, activist campaigns). Includes merger arbitrage, activist strategies, and multi-event approaches.                                                                                                                                                     | `src/pods/strategies/event_driven/`               |
-| **Long Biased**        | Primarily long-only or overwhelmingly net long. May focus on equities, commodities, or broader diversified growth portfolios, but uses hedge-fund-style structures (leverage, shorting in small measure, etc.).                                                                                                             | `src/pods/strategies/long_biased/`                |
-| **Macro**              | Takes positions (directional or relative-value) in global macro instruments (currencies, bonds, equities, commodities) based on top-down fundamental or qualitative judgments. Sub-categories include fixed income relative value, commodity-focused macro, global macro, emerging markets macro, etc.                                        | `src/pods/strategies/macro/`                      |
-| **Multi-Strategy**     | Allocates capital across multiple sub-strategies and asset classes. Often extremely diversified, with multiple PM teams under one fund umbrella.                                                                                                                                                                          | `src/pods/strategies/multi_strategy/`             |
-| **Quant**              | Systematic strategies driven by algorithms. Can include CTA (trend-following on futures/FX), quant macro, statistical arbitrage, quant equity market neutral, or factor/risk-premia approaches.                                                                                                                            | `src/pods/strategies/quant/`                      |
-| **Crypto**             | Focuses on digital assets (long-only, long/short, arbitrage, or market-neutral). Often a hybrid of fundamental and quantitative approaches.                                                                                                                                                                               | `src/pods/strategies/crypto/`                     |
-
-Below are more detailed definitions for each category and example sub-strategies. You might use these definitions to guide your **Pod** design and structure within `src/pods/strategies/`.
-
----
-
-## Installation
+## Quick Start
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- [Poetry](https://python-poetry.org/) package manager
+- Python 3.10+
+- [Poetry](https://python-poetry.org/)
 
-### Install with Poetry
+### Installation
 
 ```bash
-# Clone the repository
 git clone https://github.com/LLMQuant/magents.git
 cd magents
-
-# Install dependencies
 poetry install
+```
 
-# Activate the virtual environment
-poetry shell
+### Run a Backtest
+
+```bash
+# Basic backtest with default settings
+poetry run magents --data-dir data/ --instruments AAPL,MSFT,GOOGL
+
+# Custom time range, capital, and strategies
+poetry run magents --data-dir data/ --instruments AAPL,MSFT,GOOGL \
+    --start-date 2022-01-01 --end-date 2022-12-31 \
+    --initial-capital 1000000 \
+    --strategies ma,value,sentiment
+
+# Use a config file and generate an HTML report
+poetry run magents --data-dir data/ --instruments AAPL,MSFT \
+    --config config/default.yaml --generate-report
+```
+
+### Example Script
+
+```bash
+poetry run python examples/run_multi_strategy_backtest.py
 ```
 
 ---
 
-## Usage
+## Configuration
 
-### Running a Backtest
-
-```bash
-# Basic backtest with default parameters
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL
-
-# Backtest with custom time period and initial capital
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
-    --start-date 2022-01-01 --end-date 2022-12-31 --initial-capital 1000000
-
-# Run with specific strategies
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
-    --strategies ma,congress
-
-# Use a custom configuration file
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
-    --strategies ma,value,sentiment --config config/default.yaml
-
-# Generate an HTML report for the backtest
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
-    --strategies ma,value --generate-report
-```
-
-### Using the Example Script
-
-For a more complete example of how to run a multi-strategy backtest:
-
-```bash
-python examples/run_multi_strategy_backtest.py
-```
-
-This script demonstrates:
-
-- Loading strategy configuration from a YAML file  
-- Creating mock data if necessary  
-- Running a backtest with multiple strategies  
-- Generating visualizations and reports  
-
----
-
-## Configuration System
-
-Magents includes a flexible configuration system that allows you to customize all aspects of the backtesting process via YAML or JSON files.
-
-Example configuration file (`config/default.yaml`):
+All parameters are configurable via YAML or JSON files. See [`config/default.yaml`](config/default.yaml) for the full reference.
 
 ```yaml
-# Global Settings
 global:
-  initial_capital: 1000000.0  # Initial capital in USD
-  max_leverage: 2.0           # Maximum allowed leverage
-  transaction_cost: 0.001     # 10 basis points per trade
+  initial_capital: 1000000.0
+  max_leverage: 2.0
+  transaction_cost: 0.001   # 10 bps
+  slippage: 0.0005          # 5 bps
 
-# Strategy-specific Settings
 strategies:
   ma:
+    type: equity_long_short
     fast_window: 10
     slow_window: 30
+    position_size: 100
 
   value:
+    type: long_biased
     signal_threshold: 0.65
+    position_size: 150
     max_positions: 5
-```
-
-You can specify configuration files via the CLI:
-
-```bash
-python -m src.main --config config/default.yaml
 ```
 
 ---
 
 ## Available Strategies
 
-The framework already includes a few built-in example strategy pods:
-
-1. **Moving Average Crossover (`ma`)**  
-   A simple strategy that generates buy/sell signals based on the crossing of fast and slow moving averages.
-
-2. **Congressional Trading (`congress`)**  
-   A strategy that looks at companies possibly impacted by policy changes or legislation, attempting to identify potential beneficiaries of new regulatory or government contracting opportunities.
-
-3. **Value Investing (`value`)**  
-   A fundamental strategy that uses valuation measures (like P/E ratios, balance sheet strength, Graham Number) to find mispriced securities.
-
-4. **Sentiment Trading (`sentiment`)**  
-   A strategy that aggregates insider activity and sentiment data (news, social media) to form trading signals.
-
-Feel free to adapt or extend these examples, or replace them altogether with your own ideas.
+| Name | Key | Type | Description |
+|------|-----|------|-------------|
+| Moving Average Crossover | `ma` | Equity Long/Short | Fast/slow MA crossover signals |
+| Value Investing | `value` | Long Biased | Graham-style fundamental valuation |
+| Warren Buffett | `buffett` | Long Biased | Quality + moat-based value approach |
+| Ben Graham | `graham` | Long Biased | Deep value / margin-of-safety focus |
+| Charlie Munger | `munger` | Long Biased | Quality at a fair price |
+| Cathie Wood | `wood` | Long Biased | Disruptive innovation / growth |
+| Congressional Trading | `congress` | Event Driven | Policy-driven opportunity signals |
+| Bill Ackman | `ackman` | Event Driven | Activist / catalyst-driven trades |
+| Stanley Druckenmiller | `druckenmiller` | Macro | Top-down macro directional bets |
+| Sentiment Trading | `sentiment` | Quant | News/social sentiment aggregation |
+| Fundamentals | `fundamentals` | Quant | Systematic fundamental screening |
 
 ---
 
-## Creating Custom Strategy Pods
+## Strategy Categories
 
-To add your own strategy:
-
-1. Create a new file in `src/pods/strategies/` (e.g. `src/pods/strategies/my_strategy.py`).  
-2. Implement one or more *agents* (signal agent, execution agent, etc.) in that file:  
-   - A **signal agent** might generate trade signals based on your logic (technical, fundamental, sentiment, etc.).  
-   - An **execution agent** might convert signals into actual orders.  
-3. Combine these agents into a **Pod** (a Python class) that orchestrates their actions.  
-4. Register your new Pod in `src/pods/strategies/factory.py` (so that the CLI and engine can discover it).  
-
----
-
-## Hedge Fund Strategy Classifications & Example Pod Structure
-
-Below is a more comprehensive overview of hedge fund strategy types, which you can use to inspire how you organize and name your strategy pods in Magents. For each main strategy category (Arbitrage, Credit, Equity Long/Short, Event Driven, Long Biased, Macro, Multi-Strategy, Quant, Crypto), we list typical sub-strategies and provide high-level definitions. You can create corresponding `.py` files in `src/pods/strategies/<category>/` for each sub-strategy you wish to implement. For example, a **convertible bond arbitrage** strategy might live at:
-
-```
-src/pods/strategies/arbitrage/convertible_bond_arbitrage.py
-```
-
-Each sub-strategy can have different agents (signal generation, risk filters, execution logic) that reflect the nuances of that strategy.
-
-
-
-### 1. Arbitrage  
-
-**General Definition**: Strategies that attempt to capture risk-free (or low-risk) profits by exploiting mispricings of the same or closely related instruments.  
-Typical sub-strategies include:  
-- **Convertible Bond Arbitrage (CB)**  
-- **Tail Protection (Tail)**  
-- **Volatility Arbitrage (Vol)**  
-- **Opportunistic Arbitrage (Opp)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/arbitrage/
-  ├── convertible_bond_arbitrage.py
-  ├── tail_protection.py
-  ├── volatility_arbitrage.py
-  └── opportunistic_arbitrage.py
-```
+| Category | Description |
+|----------|-------------|
+| **Equity Long/Short** | Long and short equity positions, typically fundamental-driven |
+| **Long Biased** | Primarily net-long strategies using hedge fund structures |
+| **Event Driven** | Trades around corporate events, activism, and catalysts |
+| **Macro** | Directional positions in FX, rates, equities, and commodities |
+| **Quant** | Systematic algorithm-driven strategies (CTA, stat arb, factor) |
+| **Multi-Strategy** | Capital allocated across multiple sub-strategies |
 
 ---
 
-### 2. Credit  
+## Creating a Custom Strategy
 
-**General Definition**: Strategies focusing on debt instruments and credit-like exposures (corporate bonds, structured credit, direct lending, distressed debt).  
-Typical sub-strategies include:  
-- **Credit Relative Value (RV)**  
-- **Direct Lending (Dir Len)**  
-- **Distressed Credit (Distress)**  
-- **Multi-Credit (Multi)**  
-- **Municipal Credit (Muni)**  
-- **Structured Credit (Struct)**  
-- **Structured Credit Long-Only (StrucLO)**  
+1. Create a new file under `src/pods/strategies/<category>/`:
 
-Suggested directory for implementation:  
-```
-src/pods/strategies/credit/
-  ├── credit_relative_value.py
-  ├── direct_lending.py
-  ├── distressed_credit.py
-  ├── multi_credit.py
-  ├── municipal_credit.py
-  ├── structured_credit.py
-  └── structured_credit_lo.py
-```
+```python
+from src.pods.base import MultiAgentPod
+from src.core.event import MarketDataEvent
+from src.core.order import OrderSide
 
----
+class MyStrategyPod(MultiAgentPod):
+    def __init__(self, pod_id, instruments, **kwargs):
+        super().__init__(pod_id, instruments)
+        # Initialize your agents here
 
-### 3. Equity Long/Short  
+    def initialize(self, start_date):
+        pass
 
-**General Definition**: Investing in global equities on the long and short side. Most strategies have a fundamental bias (value/growth). Some are more technical/tactical, incorporating positioning/flow data.  
-Typical sub-strategies include:  
-- **US Equity L/S (US)**  
-- **Asia Pacific Equity L/S (APAC)**  
-- **European Equity L/S (EUR)**  
-- **Global Equity L/S (Global)**  
-- **Fundamental Equity Market Neutral (FEMN)**  
-- **Sector Long/Short (Sector)**  
-- **Other L/S (Other)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/equity_ls/
-  ├── us_equity_ls.py
-  ├── apac_equity_ls.py
-  ├── eur_equity_ls.py
-  ├── global_equity_ls.py
-  ├── femn.py  # Fundamental Equity Market Neutral
-  ├── sector_long_short.py
-  └── other_ls.py
+    def on_market_data(self, event: MarketDataEvent):
+        # Your strategy logic
+        if should_buy:
+            self.send_order(event.instrument, 100, OrderSide.BUY)
 ```
 
----
+2. Register it in `src/pods/strategies/factory.py`:
 
-### 4. Event Driven  
+```python
+from src.pods.strategies.my_category.my_strategy import MyStrategyPod
 
-**General Definition**: Strategies that invest around corporate events (M&A, spin-offs, restructuring, activism). Identifies mispriced securities with favorable risk/reward based on catalysts or event outcomes.  
-Typical sub-strategies include:  
-- **Activist (Activist)**  
-- **Merger Arbitrage (M&A)**  
-- **Event-Driven Multi-Strategy (Multi)**  
-- **Event-Driven Opportunistic (Opp)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/event_driven/
-  ├── activist.py
-  ├── merger_arbitrage.py
-  ├── multi_event_driven.py
-  └── opportunistic_event.py
-```
-
----
-
-### 5. Long Biased  
-
-**General Definition**: Overwhelmingly net-long strategies, covering multiple asset classes (equities, commodities, etc.) but still structured like hedge funds (may use some leverage, limited shorts).  
-Typical sub-strategies include:  
-- **Equities (Equity)**  
-- **Diversified Growth (Div Growth)**  
-- **Commodities (Commods)**  
-- **Other (Other)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/long_biased/
-  ├── equities_long_biased.py
-  ├── diversified_growth.py
-  ├── commodities_long_biased.py
-  └── other_long_biased.py
-```
-
----
-
-### 6. Macro  
-
-**General Definition**: Takes positions (directional or relative-value) in global markets (FX, rates, equity indexes, commodities) guided by top-down macro views. Sub-strategies may emphasize emerging markets, commodity themes, or fixed-income relative value.  
-Typical sub-strategies include:  
-- **Fixed Income Relative Value (FIRV)**  
-- **Commodities (Commods)**  
-- **Global Macro (Global)**  
-- **Emerging Markets Macro (EM)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/macro/
-  ├── fixed_income_rv.py
-  ├── macro_commodities.py
-  ├── global_macro.py
-  └── emerging_markets_macro.py
-```
-
----
-
-### 7. Multi-Strategy  
-
-**General Definition**: Capital is deployed across multiple sub-strategies and asset classes, often with distinct PM/risk-taking teams. Extremely diversified approach.  
-If you want to build a multi-strategy “umbrella” that contains multiple sub-pods *within* it, you can do so by creating one overarching strategy pod that internally references others.  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/multi_strategy/
-  └── multi_strategy_master.py
-```
-
----
-
-### 8. Quant  
-
-**General Definition**: Systematic strategies that rely on algorithmic decision-making. May include CTA (trend-following), stat arb, quant macro, factor-based equity market neutral, alternative risk premia, etc.  
-Typical sub-strategies include:  
-- **CTA (CTA)**  
-- **Quant Macro / Global Asset Allocation (Macro)**  
-- **Quant Multi-Strategy (Multi)**  
-- **Statistical Arbitrage (Stat Arb)**  
-- **Quant Equity Market Neutral (EMN)**  
-- **Risk Premia (RP)**  
-
-Suggested directory for implementation:  
-```
-src/pods/strategies/quant/
-  ├── cta.py
-  ├── quant_macro.py
-  ├── quant_multi_strategy.py
-  ├── stat_arb.py
-  ├── quant_equity_market_neutral.py
-  └── risk_premia.py
-```
-
----
-
-### 9. Crypto  
-**General Definition**: Invests in digital assets (e.g. cryptocurrencies, tokens). Can be long-only, market-neutral, or a multi-strategy approach with fundamental or quantitative signals.
-
-Suggested directory for implementation:
-```
-src/pods/strategies/crypto/
-  ├── crypto_long_short.py
-  ├── crypto_arbitrage.py
-  └── multi_crypto_strategy.py
-```
-
-> **Note**: The performance figures above (January 25 returns, 12-month, 5-year CAR) are illustrative and derived from the example data in the prompt. They do *not* reflect actual real-time performance. If you want to track or display strategy performance, you can configure your own analytics or read from an external data file.
-
----
-
-## Visualization and Reporting
-
-Magents includes a set of tools for visualizing backtest results:
-
-- Equity curves and drawdowns  
-- Performance metrics (Sharpe, CAGR, etc.)  
-- Monthly or yearly returns heatmaps  
-- Trade-by-trade analysis  
-- HTML report generation  
-
-Example command to generate an HTML backtest report:
-
-```bash
-python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
-    --strategies ma,value --generate-report --report-dir results
+# Inside StrategyFactory._register_builtin_strategies():
+self.register_strategy("my_strategy", MyStrategyPod, StrategyType.QUANT)
 ```
 
 ---
@@ -443,69 +203,73 @@ python -m src.main --data-dir /path/to/data --instruments AAPL,MSFT,GOOGL \
 ```
 magents/
 ├── src/
+│   ├── main.py                          # CLI entry point
 │   ├── core/
-│   │   ├── engine.py             # Backtesting engine
-│   │   ├── portfolio.py          # Portfolio tracking
-│   │   ├── order.py              # Order types & execution
-│   │   ├── event.py              # Event system
+│   │   ├── engine.py                    # Backtesting engine
+│   │   ├── event.py                     # Event system (dataclasses + queue)
+│   │   ├── order.py                     # Order types & order book
+│   │   └── portfolio.py                 # Portfolio & position tracking
 │   ├── data/
-│   │   ├── pipeline.py           # Data ingestion pipeline
-│   │   ├── management.py         # Data preprocessing/distribution
-│   │   ├── feeds/                # Data source implementations
-│   │       ├── market_data.py
-│   │       ├── sentiment.py
-│   ├── risk/
-│   │   ├── manager.py            # Central risk management
-│   │   ├── limits.py             # Risk limits & rules
-│   │   ├── metrics.py            # Risk metrics
+│   │   ├── management.py                # Central data hub
+│   │   └── feeds/
+│   │       └── base.py                  # DataFeed ABC, CSV & in-memory feeds
 │   ├── pods/
-│   │   ├── base.py               # Base pod class
+│   │   ├── base.py                      # BasePod, MultiAgentPod
 │   │   ├── agents/
-│   │   │   ├── base_agent.py
-│   │   │   ├── signal_agent.py
-│   │   │   └── execution_agent.py
-│   │   ├── strategies/           # Example strategies + your custom pods
-│   │       ├── moving_average.py
-│   │       ├── congressional_trading.py
-│   │       ├── ...
-│   ├── cli/
-│   │   ├── commands.py           # CLI commands
-│   │   ├── config.py             # Config handling
-│   │   ├── reporting.py          # Results/visualization
-│   ├── utils/
-│   │   ├── messaging.py          # Inter-agent messaging
-│   │   ├── logger.py             # Logging utilities
-│   │   ├── performance.py        # Performance metrics
-│   ├── main.py                   # Main entry point
-├── tests/                        # Test suite
-├── examples/                     # Example configurations
-├── docs/                         # Documentation
-├── pyproject.toml                # Poetry config
-├── README.md                     # This document
+│   │   │   └── base_agent.py            # Agent base classes
+│   │   └── strategies/
+│   │       ├── factory.py               # Strategy registry & factory
+│   │       ├── equity_long_short/       # MA crossover
+│   │       ├── long_biased/             # Buffett, Graham, Munger, Wood, value
+│   │       ├── event_driven/            # Ackman, congressional trading
+│   │       ├── macro/                   # Druckenmiller
+│   │       ├── quant/                   # Sentiment, fundamentals
+│   │       └── fundamental/             # Fundamental analysis
+│   ├── risk/
+│   │   ├── manager.py                   # Central risk management
+│   │   └── limits.py                    # Position, exposure, drawdown, leverage
+│   └── utils/
+│       ├── config.py                    # YAML/JSON config management
+│       └── visualization.py             # Charts & HTML report generation
+├── tests/                               # Test suite
+├── examples/                            # Example scripts
+├── config/
+│   └── default.yaml                     # Default configuration
+├── pyproject.toml
+├── LICENSE
+└── README.md
+```
+
+---
+
+## Development
+
+```bash
+# Install dev dependencies
+poetry install --with dev
+
+# Run tests
+poetry run pytest
+
+# Run tests with coverage
+poetry run pytest --cov=src --cov-report=term-missing
+
+# Lint
+poetry run ruff check src/ tests/
 ```
 
 ---
 
 ## Contributing
 
-Contributions are welcome! Please:
-
-1. **Fork** the project  
-2. **Create** your feature branch (`git checkout -b feature/my-feature`)  
-3. **Commit** your changes (`git commit -m 'Add my feature'`)  
-4. **Push** to the branch (`git push origin feature/my-feature`)  
-5. **Open a Pull Request**  
-
-You can contribute new strategy pods, improve the backtesting engine, enhance risk management features, or add entirely new data feeds.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Write tests for your changes
+4. Ensure all tests pass (`poetry run pytest`)
+5. Submit a pull request
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
----
-
-## Acknowledgements
-
-Inspired by real-world multi-strategy hedge funds and various open-source quant frameworks. By providing a realistic simulation environment, we hope to support strategy research, prototyping, and learning for traders, quants, and students alike.
+[MIT](LICENSE)

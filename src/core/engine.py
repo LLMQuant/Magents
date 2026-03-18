@@ -298,14 +298,14 @@ class BacktestingEngine:
     
     def _calculate_commission(self, price: float, quantity: float) -> float:
         """Calculate commission for a trade (simplified model)."""
-        # Simple percentage-based commission model
-        commission_rate = 0.001  # 0.1%
+        from src.utils.config import default_config_manager
+        commission_rate = default_config_manager.get_global_config().get('transaction_cost', 0.001)
         return price * quantity * commission_rate
-    
+
     def _calculate_slippage(self, price: float, quantity: float) -> float:
         """Calculate slippage for a trade (simplified model)."""
-        # Simple percentage-based slippage model
-        slippage_rate = 0.0005  # 0.05%
+        from src.utils.config import default_config_manager
+        slippage_rate = default_config_manager.get_global_config().get('slippage', 0.0005)
         return price * slippage_rate
     
     def _get_next_timestamp(self) -> datetime:

@@ -78,8 +78,8 @@ class DataFeed(ABC):
         # For numerical columns, fill NaNs with the previous value
         numeric_cols = data.select_dtypes(include=['float', 'int']).columns
         if not numeric_cols.empty:
-            data[numeric_cols] = data[numeric_cols].fillna(method='ffill')
-        
+            data[numeric_cols] = data[numeric_cols].ffill()
+
         return data
 
 

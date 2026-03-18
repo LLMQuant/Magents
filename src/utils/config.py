@@ -30,11 +30,12 @@ class ConfigManager:
             "strategies": {}
         }
         
+        # Load default strategy parameters first
+        self._load_default_strategy_params()
+
+        # Then override with user config file
         if config_path and os.path.exists(config_path):
             self.load_config(config_path)
-        
-        # Load default strategy parameters
-        self._load_default_strategy_params()
     
     def load_config(self, config_path: str) -> None:
         """

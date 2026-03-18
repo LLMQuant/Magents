@@ -89,24 +89,25 @@ class RiskEvent(Event):
 
 class EventQueue:
     """Queue for processing events in the system."""
-    
+
     def __init__(self):
-        self.events = []
-    
+        from collections import deque
+        self.events: deque[Event] = deque()
+
     def put(self, event: Event) -> None:
         """Add an event to the queue."""
         self.events.append(event)
-    
+
     def get(self) -> Optional[Event]:
         """Get the next event from the queue."""
         if not self.empty():
-            return self.events.pop(0)
+            return self.events.popleft()
         return None
-    
+
     def empty(self) -> bool:
         """Check if the queue is empty."""
         return len(self.events) == 0
-    
+
     def size(self) -> int:
         """Get the size of the queue."""
         return len(self.events) 

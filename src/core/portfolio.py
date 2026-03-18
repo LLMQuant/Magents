@@ -73,8 +73,6 @@ class Position:
         if self.quantity != 0 and self.current_price is not None:
             avg_cost = self.cost_basis / self.quantity
             self.unrealized_pnl = (self.current_price - avg_cost) * self.quantity
-            if self.quantity < 0:
-                self.unrealized_pnl *= -1
         else:
             self.unrealized_pnl = 0.0
         
@@ -86,8 +84,6 @@ class Position:
         if self.quantity != 0:
             avg_cost = self.cost_basis / self.quantity
             self.unrealized_pnl = (price - avg_cost) * self.quantity
-            if self.quantity < 0:
-                self.unrealized_pnl *= -1
         else:
             self.unrealized_pnl = 0.0
     
