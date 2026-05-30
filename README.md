@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-An open-source Python framework for multi-strategy hedge fund simulation and backtesting. Magents models independent strategy "pods" as concurrent agents within a shared event-driven simulation, enabling realistic backtesting under unified data feeds and risk controls.
+An open-source Python framework for multi-strategy hedge fund simulation and backtesting. Magents models independent strategy as concurrent agents within a shared trading simulation, enabling realistic backtesting under unified data feeds and risk controls.
 
 ---
 
@@ -58,7 +58,7 @@ flowchart TD
 
 ## Key Features
 
-- **Multi-Agent Pods** — Each strategy runs as an independent pod with specialized agents (signal, execution, risk)
+- **Multi-Agent** — Each strategy runs as an independent pod with specialized agents (signal, execution, risk)
 - **Event-Driven Engine** — Realistic order lifecycle with market data events, fills, and risk alerts
 - **Central Risk Management** — Portfolio-level and global constraints (drawdown, position, leverage, exposure limits)
 - **High-Fidelity Backtesting** — Configurable transaction costs, slippage, and support for market/limit/stop/stop-limit orders
@@ -157,7 +157,6 @@ strategies:
 |----------|-------------|
 | **Equity Long/Short** | Long and short equity positions, typically fundamental-driven |
 | **Long Biased** | Primarily net-long strategies using hedge fund structures |
-| **Event Driven** | Trades around corporate events, activism, and catalysts |
 | **Macro** | Directional positions in FX, rates, equities, and commodities |
 | **Quant** | Systematic algorithm-driven strategies (CTA, stat arb, factor) |
 | **Multi-Strategy** | Capital allocated across multiple sub-strategies |
